@@ -61,10 +61,10 @@ export default function AdminDashboard() {
         setUser(data.user);
         await loadQuizzes();
       } else {
-        router.push('/login');
+        router.push('/admin');
       }
     } catch (err) {
-      router.push('/login');
+      router.push('/admin');
     } finally {
       setLoading(false);
     }
@@ -129,6 +129,25 @@ export default function AdminDashboard() {
     }
   }
 
+  async function togglePublish(id: string, publish: boolean) {
+    try {
+      const res = await fetch(`/api/quizzes/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ published: publish }),
+      });
+      if (res.ok) {
+        await loadQuizzes();
+      } else {
+        const e = await res.json().catch(() => ({}));
+        alert('Error updating publish status: ' + (e.message || res.statusText));
+      }
+    } catch (err) {
+      console.error('Publish toggle error', err);
+      alert('Error toggling publish status');
+    }
+  }
+
   function resetForm() {
     setFormData({
       title: '',
@@ -184,7 +203,7 @@ export default function AdminDashboard() {
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/admin/login');
+    router.push('/admin');
   }
 
   if (loading) {
@@ -264,6 +283,12 @@ export default function AdminDashboard() {
                         className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
                       >
                         Edit
+                      </button>
+                      <button
+                        onClick={() => togglePublish(quiz._id!, !quiz.published)}
+                        className={`px-3 py-1 text-white rounded text-sm ${quiz.published ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'}`}
+                      >
+                        {quiz.published ? 'Unpublish' : 'Publish'}
                       </button>
                       <button
                         onClick={() => handleDeleteQuiz(quiz._id!)}
