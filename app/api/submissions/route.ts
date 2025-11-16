@@ -69,7 +69,7 @@ export async function POST(request: Request) {
 
       answerDetails.push({
         questionIndex: a.questionIndex ?? null,
-        questionId: question._id ?? question.id ?? null,
+        questionId: question._id ?? question._id ?? null,
         userAnswer,
         correctAnswer: correctAnswer ?? '',
         isCorrect,
