@@ -21,7 +21,7 @@ export default function LoginPage() {
       });
 
       if (res.ok) {
-        // redirect to admin dashboard (create this route next)
+        // redirect to admin dashboard
         router.push("/admin/dashboard");
       } else {
         const data = await res.json().catch(() => ({}));
