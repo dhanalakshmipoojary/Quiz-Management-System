@@ -27,13 +27,17 @@ A complete quiz management platform built with Next.js, TypeScript, MongoDB, and
 npm install
 \\\
 
-### 2. Configure .env.local
-\\\env
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
-MONGODB_DB=quiz_app
-JWT_SECRET=your_super_secret_jwt_key
-ADMIN_EMAIL=admin@gmail.com
-ADMIN_PASS=admin@123
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env.local` for local development, or set environment variables directly for production.
+
+**Note:** The same environment variables work for both development and production.
+
+Required variables:
+- `MONGODB_URI` - MongoDB connection string
+- `MONGODB_DB` - Database name (defaults to "quiz_app")
+- `JWT_SECRET` - Secret key for JWT tokens (defaults to "dev-secret" if not set)
+- `ADMIN_EMAIL` - Admin user email (defaults to "admin@gmail.com")
+- `ADMIN_PASS` - Admin user password (defaults to "admin@123")
 \\\
 
 ### 3. Seed Admin User
@@ -45,6 +49,14 @@ node scripts/seed-admin.js
 \\\ash
 npm run dev
 \\\
+
+### 5. Production Build
+\\\ash
+npm run build
+npm start
+\\\
+
+**Note:** Uses the same environment variables for both development and production.
 
 ## Admin Login
 - URL: http://localhost:3000/admin/login
