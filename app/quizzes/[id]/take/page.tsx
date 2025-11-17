@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 
 interface Question {
   _id: string;
-  text: string;
+  questionText: string;
   type: 'mcq' | 'text' | 'true_false';
   marks: number;
   options?: string[];
@@ -228,7 +228,7 @@ export default function TakeQuizPage() {
         {/* Question Card */}
         <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            {question.text}
+            {question.questionText}
             <span className="text-blue-600 ml-2">({question.marks} marks)</span>
           </h3>
 

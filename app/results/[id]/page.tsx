@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 interface Question {
   _id: string;
-  text: string;
+  questionText: string;
   marks: number;
 }
 
@@ -132,7 +132,7 @@ export default function ResultsPage() {
                 <div key={index} className={`p-6 ${answer.isCorrect ? 'bg-green-50' : 'bg-red-50'}`}>
                   <div className="flex items-start justify-between mb-3">
                     <h3 className="font-semibold text-gray-900 flex-1">
-                      Q{index + 1}: {question?.text}
+                      Q{index + 1}: {question?.questionText}
                     </h3>
                     <span className={`ml-4 px-3 py-1 rounded text-sm font-medium ${
                       answer.isCorrect
