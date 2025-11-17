@@ -27,13 +27,19 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       _id: submission.quizId,
     });
 
+    // Ensure questions have _id fields (convert ObjectIds to strings for frontend)
+    const questionsWithIds = (quiz?.questions || []).map((q: any, index: number) => ({
+      ...q,
+      _id: q._id?.toString() || q._id || `temp-${index}`, // Use temp ID if no _id exists
+    }));
+
     return NextResponse.json({
-      _id: submission._id,
+      _id: submission._id?.toString() || submission._id,
       userEmail: submission.userEmail,
       score: submission.score,
       totalMarks: submission.totalMarks,
       answers: submission.answers,
-      questions: quiz?.questions || [],
+      questions: questionsWithIds,
       submittedAt: submission.submittedAt,
     });
   } catch (err) {

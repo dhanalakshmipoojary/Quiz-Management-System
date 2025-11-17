@@ -89,7 +89,14 @@ export default function TakeQuizPage() {
   }
 
   function handleAnswerChange(value: string) {
-    const questionId = quiz!.questions[currentQuestion]._id;
+    const question = quiz!.questions[currentQuestion];
+    // Use _id if available, otherwise fall back to index-based ID
+    let questionId: string;
+    if (question._id) {
+      questionId = typeof question._id === 'string' ? question._id : String(question._id);
+    } else {
+      questionId = `q-${currentQuestion}`;
+    }
     setAnswers((prev) => ({
       ...prev,
       [questionId]: value,
@@ -111,11 +118,23 @@ export default function TakeQuizPage() {
   async function handleSubmit() {
     setSubmitting(true);
     try {
-      const submissionAnswers = quiz!.questions.map((q, idx) => ({
-        questionIndex: idx,
-        questionId: (q as any)._id ?? null,
-        answer: answers[(q as any)._id] || '',
-      }));
+      const submissionAnswers = quiz!.questions.map((q, idx) => {
+        // Use _id if available, otherwise fall back to index-based ID
+        let qId: string;
+        let questionId: string | null;
+        if (q._id) {
+          qId = typeof q._id === 'string' ? q._id : String(q._id);
+          questionId = qId;
+        } else {
+          qId = `q-${idx}`;
+          questionId = null;
+        }
+        return {
+          questionIndex: idx,
+          questionId,
+          answer: answers[qId] || '',
+        };
+      });
 
       const res = await fetch('/api/submissions', {
         method: 'POST',
@@ -204,7 +223,14 @@ export default function TakeQuizPage() {
   }
 
   const question = quiz.questions[currentQuestion];
-  const answer = answers[question._id] || '';
+  // Use _id if available, otherwise fall back to index-based ID
+  let questionId: string;
+  if (question._id) {
+    questionId = typeof question._id === 'string' ? question._id : String(question._id);
+  } else {
+    questionId = `q-${currentQuestion}`;
+  }
+  const answer = answers[questionId] || '';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -238,7 +264,7 @@ export default function TakeQuizPage() {
                 <label key={index} className="flex items-center p-3 border border-gray-300 rounded cursor-pointer hover:bg-blue-50">
                   <input
                     type="radio"
-                    name={question._id}
+                    name={`q-${questionId}`}
                     value={option}
                     checked={answer === option}
                     onChange={(e) => handleAnswerChange(e.target.value)}
@@ -256,7 +282,7 @@ export default function TakeQuizPage() {
                 <label key={option} className="flex items-center p-3 border border-gray-300 rounded cursor-pointer hover:bg-blue-50">
                   <input
                     type="radio"
-                    name={question._id}
+                    name={`q-${questionId}`}
                     value={option}
                     checked={answer === option}
                     onChange={(e) => handleAnswerChange(e.target.value)}
@@ -317,7 +343,16 @@ export default function TakeQuizPage() {
                 className={`w-10 h-10 rounded text-sm font-medium transition ${
                   index === currentQuestion
                     ? 'bg-blue-600 text-white'
-                    : answers[quiz.questions[index]._id]
+                    : (() => {
+                        const q = quiz.questions[index];
+                        let qId: string;
+                        if (q._id) {
+                          qId = typeof q._id === 'string' ? q._id : String(q._id);
+                        } else {
+                          qId = `q-${index}`;
+                        }
+                        return answers[qId];
+                      })()
                     ? 'bg-green-200 text-gray-900'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}

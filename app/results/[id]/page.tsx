@@ -11,7 +11,8 @@ interface Question {
 }
 
 interface Answer {
-  questionId: string;
+  questionIndex: number | null;
+  questionId: string | null;
   userAnswer: string;
   correctAnswer: string;
   isCorrect: boolean;
@@ -127,7 +128,23 @@ export default function ResultsPage() {
 
           <div className="divide-y">
             {submission.answers.map((answer, index) => {
-              const question = submission.questions.find((q) => q._id === answer.questionId);
+              // Try to find question by ID first, then fall back to index
+              let question = submission.questions.find((q) => {
+                const qId = q._id?.toString() || q._id || '';
+                const aId = answer.questionId?.toString() || answer.questionId || '';
+                return qId === aId;
+              });
+              
+              // If no match by id, fall back to questionIndex
+              if (!question && typeof answer.questionIndex === 'number') {
+                question = submission.questions[answer.questionIndex];
+              }
+              
+              // Final fallback - use index from map
+              if (!question) {
+                question = submission.questions[index];
+              }
+              
               return (
                 <div key={index} className={`p-6 ${answer.isCorrect ? 'bg-green-50' : 'bg-red-50'}`}>
                   <div className="flex items-start justify-between mb-3">
