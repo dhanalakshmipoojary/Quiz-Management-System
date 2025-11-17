@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
       let question = quiz.questions.find((q: any) => {
         try {
-          const qid = q._id ? toStr(q._id) : toStr(q.questionId ?? q.id ?? q.questionText);
+          const qid = q._id ? toStr(q._id) : toStr(q.questionId ?? q.questionText);
           return qid === qId;
         } catch (e) {
           return false;
