@@ -54,15 +54,42 @@ export async function POST(request: Request) {
         ? question.correctAnswer[0]
         : question.correctAnswer;
 
+      // Normalize answers: trim whitespace and convert to lowercase
+      const normalizedUserAnswer = toStr(userAnswer).trim().toLowerCase();
+      const normalizedCorrectAnswer = toStr(correctAnswer || '').trim().toLowerCase();
+
       let isCorrect = false;
       if (question.type === 'mcq' || question.type === 'true_false') {
-        if (toStr(userAnswer).toLowerCase() === toStr(correctAnswer).toLowerCase()) {
+        // Exact match for MCQ and True/False
+        if (normalizedUserAnswer === normalizedCorrectAnswer) {
           isCorrect = true;
         }
       } else if (question.type === 'text') {
-        if (toStr(userAnswer).toLowerCase().includes(toStr(correctAnswer).toLowerCase())) {
+        // Substring match for text answers (case-insensitive)
+        // Check if either string contains the other (flexible matching)
+        if (normalizedUserAnswer && normalizedCorrectAnswer) {
+          // User answer contains correct answer OR correct answer contains user answer
+          if (normalizedUserAnswer.includes(normalizedCorrectAnswer) || 
+              normalizedCorrectAnswer.includes(normalizedUserAnswer)) {
+            isCorrect = true;
+          }
+        } else if (!normalizedUserAnswer && !normalizedCorrectAnswer) {
+          // Both are empty - consider correct
+          isCorrect = true;
+        } else if (normalizedUserAnswer === normalizedCorrectAnswer) {
+          // Exact match (handles empty strings)
           isCorrect = true;
         }
+        
+        // Debug logging for text questions
+        console.log('Text validation:', {
+          questionIndex: a.questionIndex,
+          userAnswer: normalizedUserAnswer,
+          correctAnswer: normalizedCorrectAnswer,
+          isCorrect,
+          userContainsCorrect: normalizedUserAnswer.includes(normalizedCorrectAnswer),
+          correctContainsUser: normalizedCorrectAnswer.includes(normalizedUserAnswer),
+        });
       }
 
       if (isCorrect) score += Number(question.marks) || 0;

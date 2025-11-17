@@ -451,7 +451,7 @@ export default function AdminDashboard() {
                           type="text"
                           value={currentQuestion.correctAnswer}
                           onChange={(e) =>
-                            setCurrentQuestion({ ...currentQuestion, correctAnswer: e.target.value })
+                            setCurrentQuestion({ ...currentQuestion, correctAnswer: e.target.value.trim().toLowerCase() })
                           }
                           className="w-full border rounded px-3 py-2"
                           placeholder="Correct answer"
